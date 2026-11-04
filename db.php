@@ -48,17 +48,49 @@ try {
             borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP,
             due_date DATETIME,
             return_date DATETIME,
+            renewal_count INTEGER NOT NULL DEFAULT 0,
             status TEXT NOT NULL DEFAULT 'Pending',
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
             FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
         );
     ");
 
+    // 3b. Migration: add renewal_count to databases created before renewals existed
+    $cols = $pdo->query("PRAGMA table_info(borrow_records)")->fetchAll();
+    if (!in_array('renewal_count', array_column($cols, 'name'))) {
+        $pdo->exec("ALTER TABLE borrow_records ADD COLUMN renewal_count INTEGER NOT NULL DEFAULT 0");
+    }
+
     // 4. Seed Data Function (Runs ONLY if tables are empty)
     seedDataIfEmpty($pdo);
 
+    // 5. Safety net: if no librarian exists, recreate the default one
+    ensureDefaultLibrarian($pdo);
+
 } catch (PDOException $e) {
     die("Database Error: " . $e->getMessage());
+}
+
+/**
+ * Hardcoded librarian account:
+ *   username: librarian
+ *   password: admin123
+ * Recreated only when the database has no librarian at all.
+ */
+function ensureDefaultLibrarian(PDO $pdo) {
+    $count = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'librarian'")->fetchColumn();
+    if ($count == 0) {
+        // If the default account exists but was demoted, restore it; otherwise create it
+        $exists = $pdo->query("SELECT COUNT(*) FROM users WHERE username = 'librarian'")->fetchColumn();
+        if ($exists) {
+            $pdo->exec("UPDATE users SET role = 'librarian' WHERE username = 'librarian'");
+        } else {
+            $pdo->prepare("
+                INSERT INTO users (username, email, password, role)
+                VALUES ('librarian', 'admin@campus.edu', :password, 'librarian')
+            ")->execute([':password' => password_hash('admin123', PASSWORD_BCRYPT)]);
+        }
+    }
 }
 
 /**
