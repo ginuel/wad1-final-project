@@ -9,7 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    $role     = $_POST['role'] ?? 'student'; // Default to student
+    $role     = $_POST['role'] ?? 'student';
+
+    // Only student or teacher can be chosen here. The librarian account is
+    // hardcoded in db.php and promoted by a librarian from the Users page.
+    if (!in_array($role, ['student', 'teacher'], true)) {
+        $role = 'student';
+    }
 
     if (!empty($username) && !empty($email) && !empty($password)) {
         // Secure password hashing
@@ -42,33 +48,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register - Campus Library</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
-    <h2>Register Account</h2>
-    <?php if ($error): ?><p style="color: red;"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-    <?php if ($success): ?><p style="color: green;"><?= $success ?></p><?php endif; ?>
+<body class="auth">
+    <main class="auth-wrap">
+        <div class="auth-brand">
+            <span class="brand-mark">📚</span>
+            <h1>Create your account</h1>
+            <p>Join the Campus Library to reserve books online.</p>
+        </div>
 
-    <form method="POST" action="register.php">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
-        
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
-        
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+        <div class="card card-gold auth-card">
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
+            <?php if ($success): ?>
+                <div class="alert alert-success"><?= $success ?></div>
+            <?php endif; ?>
 
-        <label>Role:</label><br>
-        <select name="role">
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-            <option value="librarian">Librarian</option>
-        </select><br><br>
+            <form method="POST" action="register.php">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="new-password" required>
+                </div>
+                <div class="field">
+                    <label for="role">I am a</label>
+                    <select id="role" name="role">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-block">Create account</button>
+            </form>
+        </div>
 
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="login.php">Login here</a></p>
+        <p class="auth-switch">Already have an account? <a href="login.php">Log in</a></p>
+    </main>
+    <footer class="site-footer">Campus Library &copy; <?= date('Y') ?></footer>
+
 </body>
 </html>

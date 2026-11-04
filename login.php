@@ -40,22 +40,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Campus Library</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
-    <h2>Library Login</h2>
-    <?php if ($error): ?><p style="color: red;"><?= htmlspecialchars($error) ?></p><?php endif; ?>
+<body class="auth">
+    <main class="auth-wrap">
+        <div class="auth-brand">
+            <span class="brand-mark">📚</span>
+            <h1>Campus Library</h1>
+            <p>Sign in to browse and reserve books.</p>
+        </div>
 
-    <form method="POST" action="login.php">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
-        
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+        <div class="card card-gold auth-card">
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
 
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="register.php">Register here</a></p>
+            <form method="POST" action="login.php">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-block">Log in</button>
+            </form>
+        </div>
+
+        <p class="auth-switch">New here? <a href="register.php">Create an account</a></p>
+        <p class="auth-switch"><a href="items.php">Browse Books</a> without logging in</p>
+    </main>
+    <footer class="site-footer">Campus Library &copy; <?= date('Y') ?></footer>
+
 </body>
 </html>

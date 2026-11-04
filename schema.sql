@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS borrow_records (
     borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     due_date DATETIME,
     return_date DATETIME,
-    status TEXT NOT NULL DEFAULT 'Pending', -- e.g., 'Pending', 'Approved', 'Borrowed', 'Returned', 'Rejected'
+    renewal_count INTEGER NOT NULL DEFAULT 0, -- how many times the loan was renewed
+    status TEXT NOT NULL DEFAULT 'Pending', -- 'Pending', 'Approved' (on loan), 'Returned', 'Rejected'
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
 );
