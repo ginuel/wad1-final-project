@@ -22,8 +22,12 @@ The Campus Library & Books Resources Reservation System is a lightweight, respon
 ---
 
 ## Group Members
-* **Ginuel Marcelo Maquellao** (Lead Developer & System Architect)
-* Development & Project Team Members
+* **Ginuel Marcelo Maquellao** — Lead Developer & System Architect
+* **Garrett Alcantara** — Backend Developer
+* **Racel Caña** — UI / Frontend Designer
+* **Marion Cortez** — Backend Developer
+* **Charles Bernarte** — Database Administrator
+* **Ashley Mananquil** — UI / Frontend Designer
 
 ---
 
